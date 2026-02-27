@@ -1,45 +1,35 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import PhotoGrid from './components/PhotoGrid';
 import UploadButton from './components/UploadButton';
 
 function App() {
-  const [refreshKey, setRefreshKey] = useState(0);
-
-  const handleUploadSuccess = () => {
-    setRefreshKey(prev => prev + 1);
-  };
+  const [photoCount, setPhotoCount] = useState(0);
 
   return (
-    // Fondo negro profundo y texto gris muy claro para suavidad
-    <div className="min-h-screen bg-[#000000] text-[#F5F5F5] font-sans selection:bg-[#F8BBD0]/30">
+    <div className="min-h-screen bg-black text-white font-sans">
+      {/* Header con Contador */}
+      <header className="sticky top-0 z-40 bg-black/80 backdrop-blur-md border-b border-white/5 p-4 flex justify-between items-center px-6">
+        <div className="flex-1"></div> {/* Espaciador para centrar el título */}
 
-      {/* Header Estilo App Nativa con desenfoque y acento Rosa Palo */}
-      <header className="sticky top-0 z-40 bg-[#000000]/80 backdrop-blur-xl border-b border-white/5 p-5">
-        <div className="max-w-2xl mx-auto flex justify-between items-center">
-          <div>
-            {/* Título Serif elegante como la invitación */}
-            <h1 className="text-2xl font-serif tracking-tight text-[#F5F5F5]">
-              XV <span className="text-[#F8BBD0]">SOFÍA</span>
-            </h1>
-            <p className="text-[10px] uppercase tracking-widest text-gray-500 font-medium">
-              Galería de Recuerdos Mágicos
-            </p>
+        <div className="text-center">
+          <h1 className="text-3xl font-parisienne text-[#F8BBD0]">XV Sofía</h1>
+          <p className="text-[9px] uppercase tracking-[0.4em] text-gray-500">Galería Mágica</p>
+        </div>
+
+        {/* Contador de Imágenes con estilo UX Mobile [cite: 2026-01-12] */}
+        <div className="flex-1 flex justify-end">
+          <div className="bg-[#F8BBD0]/10 border border-[#F8BBD0]/30 rounded-full px-3 py-1 flex items-center gap-2">
+            <span className="text-[#F8BBD0] font-bold text-sm">{photoCount}</span>
+            <span className="text-[10px] text-gray-400 uppercase tracking-tighter">Fotos</span>
           </div>
-          {/* Indicador visual rosa suave */}
-          <div className="h-2 w-2 rounded-full bg-[#F8BBD0] animate-pulse shadow-[0_0_10px_#F8BBD0]"></div>
         </div>
       </header>
 
-      {/* Contenedor de la Galería Responsiva */}
-      <main className="max-w-7xl mx-auto min-h-[calc(100vh-80px)] px-4 py-8">
-        <PhotoGrid key={refreshKey} />
+      <main className="pb-32">
+        <PhotoGrid setPhotoCount={setPhotoCount} />
       </main>
 
-      {/* Botón de Acción Flotante */}
-      <UploadButton onUploadSuccess={handleUploadSuccess} />
-
-      {/* Gradiente sutil de fondo rosa para profundidad */}
-      <div className="fixed inset-0 bg-[radial-gradient(circle_at_50%_50%,_rgba(248,187,208,0.03),transparent)] pointer-events-none"></div>
+      <UploadButton onUploadSuccess={() => window.location.reload()} />
     </div>
   );
 }
