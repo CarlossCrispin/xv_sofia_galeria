@@ -3,44 +3,43 @@ import PhotoGrid from './components/PhotoGrid';
 import UploadButton from './components/UploadButton';
 
 function App() {
-  // Estado para forzar el refresco de la galería cuando se sube una foto con éxito
   const [refreshKey, setRefreshKey] = useState(0);
 
-  const handleUploadSuccess = (info) => {
-    console.log("Imagen lista en Cloudinary:", info.secure_url);
-    // Cambiamos la key para que el componente PhotoGrid se vuelva a montar/ejecutar
+  const handleUploadSuccess = () => {
     setRefreshKey(prev => prev + 1);
   };
 
   return (
-    <div className="min-h-screen bg-[#050505] text-white font-sans selection:bg-[#D4AF37]/30">
+    // Fondo negro profundo y texto gris muy claro para suavidad
+    <div className="min-h-screen bg-[#000000] text-[#F5F5F5] font-sans selection:bg-[#F8BBD0]/30">
 
-      {/* Header Estilo App Nativa */}
-      <header className="sticky top-0 z-40 bg-[#050505]/80 backdrop-blur-xl border-b border-white/5 p-5">
+      {/* Header Estilo App Nativa con desenfoque y acento Rosa Palo */}
+      <header className="sticky top-0 z-40 bg-[#000000]/80 backdrop-blur-xl border-b border-white/5 p-5">
         <div className="max-w-2xl mx-auto flex justify-between items-center">
           <div>
-            <h1 className="text-xl font-bold tracking-tight">
-              XV <span className="text-[#D4AF37]">SOFÍA</span>
+            {/* Título Serif elegante como la invitación */}
+            <h1 className="text-2xl font-serif tracking-tight text-[#F5F5F5]">
+              XV <span className="text-[#F8BBD0]">SOFÍA</span>
             </h1>
             <p className="text-[10px] uppercase tracking-widest text-gray-500 font-medium">
-              Galería en Vivo
+              Galería de Recuerdos Mágicos
             </p>
           </div>
-          {/* Indicador visual de que es una zona segura */}
-          <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse shadow-[0_0_10px_#22c55e]"></div>
+          {/* Indicador visual rosa suave */}
+          <div className="h-2 w-2 rounded-full bg-[#F8BBD0] animate-pulse shadow-[0_0_10px_#F8BBD0]"></div>
         </div>
       </header>
 
-      {/* Contenedor de la Galería */}
-      <main className="max-w-2xl mx-auto min-h-[calc(100vh-80px)]">
+      {/* Contenedor de la Galería Responsiva */}
+      <main className="max-w-7xl mx-auto min-h-[calc(100vh-80px)] px-4 py-8">
         <PhotoGrid key={refreshKey} />
       </main>
 
-      {/* Footer / Botón de Acción */}
+      {/* Botón de Acción Flotante */}
       <UploadButton onUploadSuccess={handleUploadSuccess} />
 
-      {/* Gradiente sutil de fondo para profundidad UX */}
-      <div className="fixed inset-0 bg-[radial-gradient(circle_at_50%_50%,_rgba(212,175,55,0.05),transparent)] pointer-events-none"></div>
+      {/* Gradiente sutil de fondo rosa para profundidad */}
+      <div className="fixed inset-0 bg-[radial-gradient(circle_at_50%_50%,_rgba(248,187,208,0.03),transparent)] pointer-events-none"></div>
     </div>
   );
 }

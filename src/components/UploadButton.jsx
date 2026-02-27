@@ -2,61 +2,59 @@ import { Camera } from 'lucide-react';
 
 const UploadButton = ({ onUploadSuccess }) => {
   const openWidget = () => {
-    if (!window.cloudinary) {
-      alert("Cargando servicios de imagen... intenta de nuevo.");
-      return;
-    }
+    if (!window.cloudinary) return;
 
     const widget = window.cloudinary.createUploadWidget(
       {
         cloudName: 'dczfai1zk',
         uploadPreset: 'xv_sofia_galeria',
-        // --- ADAPTACIÓN DE CARPETA Y TAGS ---
-        folder: 'fotos_xv_sofia', // <--- Se crea esta carpeta automáticamente en Cloudinary
-        tags: ['fiesta_sofia'],    // Sigue siendo necesario para que el PhotoGrid las encuentre
-        // ------------------------------------
+        folder: 'fotos_xv_sofia',
+        tags: ['fiesta_sofia'],
+        language: "es",              // Interfaz en español
+        defaultSource: 'camera',     // Abre cámara directo
         sources: ['camera', 'local'],
         multiple: false,
-        language: "es",
+
+        // Estilos del widget para que combine con el botón
         styles: {
           palette: {
-            window: "#0F172A",
-            sourceBg: "#0F172A",
-            windowBorder: "#D4AF37",
-            tabIcon: "#D4AF37",
+            window: "#000000",
+            sourceBg: "#000000",
+            windowBorder: "#F8BBD0",
+            tabIcon: "#F8BBD0",
+            menuIcons: "#F8BBD0",
+            textLight: "#F5F5F5",
+            action: "#F8BBD0",      // Rosa del header
             inactiveTabIcon: "#8E9EB1",
-            menuIcons: "#D4AF37",
-            link: "#FFB6C1",
-            action: "#D4AF37",
-            inProgress: "#FFB6C1",
-            complete: "#20B832",
-            error: "#EA3546",
-            textDark: "#000000",
-            textLight: "#FFFFFF"
+            link: "#F8BBD0",
           }
         }
       },
       (error, result) => {
         if (!error && result && result.event === "success") {
-          console.log("¡Foto guardada en carpeta!", result.info.secure_url);
-          if (onUploadSuccess) {
-            onUploadSuccess(result.info);
-          }
+          if (onUploadSuccess) onUploadSuccess();
         }
       }
     );
-
     widget.open();
   };
 
   return (
     <div className="fixed bottom-8 left-0 right-0 flex justify-center px-4 z-50">
+      {/* Botón con el rosa exacto del Header (#F8BBD0) */}
       <button
         onClick={openWidget}
-        className="bg-[#D4AF37] text-pink-400 font-bold py-4 px-8 rounded-full shadow-2xl flex items-center gap-3 transform active:scale-95 transition-all w-full max-w-xs justify-center"
+        className="
+          bg-[#F8BBD0] text-[#000000] 
+          font-bold text-lg py-4 px-10 rounded-full 
+          shadow-[0_10px_40px_rgba(248,187,208,0.4)] 
+          flex items-center gap-3 
+          transform transition-all active:scale-90
+          hover:brightness-110
+        "
       >
-        <Camera size={24} />
-        <span>Subir Foto de la Fiesta</span>
+        <Camera size={26} />
+        <span className="uppercase tracking-widest">Capturar Momento</span>
       </button>
     </div>
   );
