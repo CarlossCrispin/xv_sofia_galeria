@@ -15,6 +15,7 @@ const UploadButton = ({ onUploadSuccess }) => {
     formData.append('file', file);
     formData.append('upload_preset', 'xv_sofia_galeria');
     formData.append('folder', 'fotos_xv_sofia');
+    formData.append('tags', 'fiesta_sofia'); //
 
     try {
       const response = await fetch(
