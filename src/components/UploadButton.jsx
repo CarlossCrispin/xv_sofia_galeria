@@ -15,7 +15,7 @@ const UploadButton = ({ onUploadSuccess }) => {
         folder: 'fotos_xv_sofia', // <--- Se crea esta carpeta automáticamente en Cloudinary
         tags: ['fiesta_sofia'],    // Sigue siendo necesario para que el PhotoGrid las encuentre
         // ------------------------------------
-        sources: ['local', 'camera'],
+        sources: ['camera', 'local'],
         multiple: false,
         language: "es",
         styles: {
