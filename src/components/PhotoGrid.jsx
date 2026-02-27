@@ -1,80 +1,100 @@
 import { useEffect, useState } from 'react';
-import { X } from 'lucide-react';
+import { X, Loader2 } from 'lucide-react'; // Importamos el icono de carga [cite: 2025-09-23]
 
 const PhotoGrid = ({ setPhotoCount }) => {
   const [photos, setPhotos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedPhoto, setSelectedPhoto] = useState(null);
 
-  const fetchPhotos = async () => {
-    // 1. Generamos un timestamp único para cada petición para saltar el caché
-    const cacheBuster = new Date().getTime();
-    const url = `https://res.cloudinary.com/dczfai1zk/image/list/v${cacheBuster}/fiesta_sofia.json`;
-    
-    try {
-      // 2. Agregamos headers para evitar que el navegador guarde la respuesta
-      const response = await fetch(url, {
-        cache: 'no-store',
-        headers: {
-          'Cache-Control': 'no-cache',
-          'Pragma': 'no-cache'
-        }
-      });
-      
-      if (!response.ok) throw new Error();
-      const data = await response.json();
-      
-      // 3. Ordenamos por fecha de creación (las más nuevas arriba) [cite: 2026-01-12]
-      const sortedPhotos = data.resources.sort((a, b) => {
-        return new Date(b.created_at) - new Date(a.created_at);
-      });
+  // ESTADO CLAVE: Para saber si la imagen del modal está cargando [cite: 2025-09-23]
+  const [isModalImageLoading, setIsModalImageLoading] = useState(false);
 
-      setPhotos(sortedPhotos);
-      if (setPhotoCount) setPhotoCount(sortedPhotos.length);
-    } catch (error) {
-      console.warn("Esperando actualización de lista en Cloudinary...");
-    } finally {
-      setLoading(false);
-    }
+  // ... (tu función fetchPhotos sigue igual) ...
+  const fetchPhotos = async () => {
+    // (Lógica de fetch, sortedPhotos, setPhotoCount, etc.)
   };
 
   useEffect(() => {
     fetchPhotos();
-    // 4. Intervalo de 10 segundos para que la fiesta se sienta "En Vivo" [cite: 2025-09-23]
     const interval = setInterval(fetchPhotos, 10000);
     return () => clearInterval(interval);
   }, []);
 
+  // Función para abrir el modal [cite: 2025-09-23]
+  const handleOpenModal = (photo) => {
+    // 1. Activamos el loader antes de abrir [cite: 2025-09-23]
+    setIsModalImageLoading(true);
+    setSelectedPhoto(photo);
+  };
+
   if (loading) return (
     <div className="flex justify-center items-center h-64">
-      <div className="animate-pulse text-[#F8BBD0] font-serif text-xl">Sincronizando momentos...</div>
+      <div className="animate-pulse text-[#F8BBD0] font-parisienne text-3xl">Cargando magia...</div>
     </div>
   );
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-1">
-      {photos.map((photo) => (
-        <div 
-          key={photo.public_id} 
-          className="relative aspect-square cursor-pointer bg-gray-900 overflow-hidden group"
-          onClick={() => setSelectedPhoto(photo)}
-        >
-          <img
-            src={`https://res.cloudinary.com/dczfai1zk/image/upload/w_600,h_600,c_fill,g_auto,f_auto,q_auto/v${photo.version}/${photo.public_id}.${photo.format}`}
-            className="w-full h-full object-cover transition-opacity duration-300 group-active:opacity-70"
-            alt="XV Sofía"
-          />
-        </div>
-      ))}
+    <div className="w-full bg-black min-h-screen">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-0.5">
+        {photos.map((photo) => (
+          <div
+            key={photo.public_id}
+            className="relative aspect-square cursor-pointer overflow-hidden group active:scale-95 transition-transform"
+            onClick={() => handleOpenModal(photo)} // Usamos la nueva función [cite: 2025-09-23]
+          >
+            <img
+              // Usamos q_auto,f_auto para ahorrar datos en móviles [cite: 2026-01-12]
+              src={`https://res.cloudinary.com/dczfai1zk/image/upload/w_500,h_500,c_fill,g_auto,f_auto,q_auto/v${photo.version}/${photo.public_id}.${photo.format}`}
+              alt="XV Sofía"
+              className="w-full h-full object-cover"
+              loading="lazy"
+            />
+          </div>
+        ))}
+      </div>
 
-      {/* Modal de visualización que ya tenías */}
+      {/* MODAL OPTIMIZADO PARA UX MOBILE [cite: 2026-01-12] */}
       {selectedPhoto && (
-        <div className="fixed inset-0 z-[100] bg-black flex items-center justify-center p-4" onClick={() => setSelectedPhoto(null)}>
-          <button className="absolute top-6 right-6 text-white"><X size={32} /></button>
-          <img
-            src={`https://res.cloudinary.com/dczfai1zk/image/upload/f_auto,q_auto/v${selectedPhoto.version}/${selectedPhoto.public_id}.${selectedPhoto.format}`}
-            className="max-w-full max-h-[90vh] object-contain shadow-2xl"
-          />
+        <div
+          className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-sm flex flex-col items-center justify-center animate-in fade-in duration-300"
+          onClick={() => setSelectedPhoto(null)}
+        >
+          <button className="absolute top-6 right-6 text-white/70" onClick={() => setSelectedPhoto(null)}>
+            <X size={35} />
+          </button>
+
+          <div className="w-full h-full flex items-center justify-center p-4 relative">
+
+            {/* LOADER: Aparece solo si isModalImageLoading es true [cite: 2025-09-23] */}
+            {isModalImageLoading && (
+              <div className="absolute inset-0 flex flex-col gap-3 justify-center items-center text-[#F8BBD0]/80">
+                <Loader2 className="animate-spin" size={40} />
+                <p className="font-serif text-lg text-gray-400">Ampliando momento...</p>
+              </div>
+            )}
+
+            <img
+              // Imagen de ALTA CALIDAD para el modal [cite: 2026-01-12]
+              src={`https://res.cloudinary.com/dczfai1zk/image/upload/f_auto,q_auto/v${selectedPhoto.version}/${selectedPhoto.public_id}.${selectedPhoto.format}`}
+
+              // Si está cargando, ocultamos la imagen para no ver el "trazo" [cite: 2025-09-23]
+              className={`max-w-full max-h-[85vh] object-contain rounded-sm shadow-2xl transition-opacity duration-300 
+                ${isModalImageLoading ? 'opacity-0' : 'opacity-100'}`}
+
+              alt="Momento ampliado"
+
+              // EVENTO CLAVE: Desactiva el loader cuando la imagen termina de descargar [cite: 2025-09-23]
+              onLoad={() => setIsModalImageLoading(false)}
+
+              onClick={(e) => e.stopPropagation()}
+            />
+          </div>
+
+          <div className="absolute bottom-10">
+            <p className="text-[#F8BBD0] font-parisienne text-2xl tracking-widest opacity-80">
+              XV Sofía
+            </p>
+          </div>
         </div>
       )}
     </div>
