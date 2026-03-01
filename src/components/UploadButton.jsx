@@ -6,6 +6,7 @@ const UploadButton = ({ onUploadSuccess }) => {
   const [isUploading, setIsUploading] = useState(false);
   const [isEventExpired, setIsEventExpired] = useState(false);
 
+  // LÍMITE: Domingo 8 de Marzo a las 23:59:59
   const EXPIRATION_DATE = new Date('2026-03-08T23:59:59');
 
   useEffect(() => {
@@ -16,12 +17,15 @@ const UploadButton = ({ onUploadSuccess }) => {
       }
     };
     checkStatus();
+    // Verificamos cada minuto para una transición de estado fluida
     const interval = setInterval(checkStatus, 60000);
     return () => clearInterval(interval);
   }, []);
 
   const handleFileChange = async (event) => {
+    // Seguridad: Bloquea la función si el evento ya expiró
     if (isEventExpired) return;
+
     const file = event.target.files[0];
     if (!file) return;
 
@@ -37,18 +41,21 @@ const UploadButton = ({ onUploadSuccess }) => {
         `https://api.cloudinary.com/v1_1/dczfai1zk/image/upload`,
         { method: 'POST', body: formData }
       );
+
       if (response.ok) {
+        // Feedback visual de éxito antes de recargar
         setTimeout(() => {
           if (onUploadSuccess) onUploadSuccess();
           window.location.reload();
         }, 2000);
       }
     } catch (error) {
-      console.error("Error al subir:", error);
+      console.error("Error al subir a Cloudinary:", error);
       setIsUploading(false);
     }
   };
 
+  // ESTADO: Galería Cerrada (Post-evento)
   if (isEventExpired) {
     return (
       <div className="fixed bottom-8 left-0 right-0 flex justify-center px-6 z-50 animate-in fade-in duration-500">
@@ -62,10 +69,10 @@ const UploadButton = ({ onUploadSuccess }) => {
 
   return (
     <div className="fixed bottom-8 left-0 right-0 flex justify-center px-6 z-50">
+      {/* Input optimizado: Sin 'capture' para permitir acceso a Galería y Cámara */}
       <input
         type="file"
         accept="image/*"
-        capture="environment"
         className="hidden"
         ref={fileInputRef}
         onChange={handleFileChange}
@@ -81,7 +88,7 @@ const UploadButton = ({ onUploadSuccess }) => {
           flex items-center justify-center gap-3 
           transition-all duration-300 ease-out
           
-          /* ESTADOS DINÁMICOS [cite: 2025-09-23] */
+          /* Estilos dinámicos y Hover para Desktop */
           ${isUploading
             ? 'bg-zinc-800 cursor-not-allowed border-zinc-700'
             : 'bg-[#F8BBD0] hover:bg-[#fbcbdc] hover:-translate-y-1 hover:shadow-[0_15px_45px_rgba(248,187,208,0.4)] active:scale-95 cursor-pointer shadow-[0_10px_40px_rgba(248,187,208,0.2)]'
